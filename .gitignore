@@ -1,0 +1,21 @@
+# Game copy (too large for git)
+game/
+
+# Build output
+bin/
+obj/
+
+# IDE
+.vs/
+*.user
+*.suo
+
+# Debug logs
+*.log
+
+# Claude Code sessions
+.claude/
+
+# Dev reference files (dumped from game assemblies)
+all_types.txt
+hud_classes_reference.txt
