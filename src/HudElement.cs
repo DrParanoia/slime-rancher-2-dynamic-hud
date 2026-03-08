@@ -150,7 +150,19 @@ public class HudElement
         {
             if (entry.Graphic == null) continue;
             var c = entry.Graphic.color;
-            c.a = entry.OriginalAlpha * alpha;
+
+            // If the game changed the alpha since we last wrote it,
+            // update OriginalAlpha to respect the game's intent
+            // (e.g. showing/hiding "EMPTY" text or item counts).
+            if (entry.LastAppliedAlpha >= 0f &&
+                System.Math.Abs(c.a - entry.LastAppliedAlpha) > 0.001f)
+            {
+                entry.OriginalAlpha = c.a;
+            }
+
+            float target = entry.OriginalAlpha * alpha;
+            c.a = target;
+            entry.LastAppliedAlpha = target;
             entry.Graphic.color = c;
         }
     }
@@ -167,10 +179,11 @@ public class HudElement
                lower.Contains("overlay") || lower.Contains("drop");
     }
 
-    private readonly struct GraphicEntry
+    private class GraphicEntry
     {
         public readonly Graphic Graphic;
-        public readonly float OriginalAlpha;
+        public float OriginalAlpha;
+        public float LastAppliedAlpha = -1f;
 
         public GraphicEntry(Graphic graphic, float originalAlpha)
         {
