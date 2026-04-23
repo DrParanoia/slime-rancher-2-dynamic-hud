@@ -16,6 +16,7 @@ public static class HudController
     public static HudElement Compass { get; private set; } = new("Compass");
     public static HudElement Currency { get; private set; } = new("Currency");
     public static HudElement Clock { get; private set; } = new("Clock");
+    public static HudElement PinnedRecipe { get; private set; } = new("PinnedRecipe");
 
     private static readonly Dictionary<int, HudElement> _ammoSlots = new();
     private static bool _slotsResolved;
@@ -161,6 +162,11 @@ public static class HudController
         Compass = new("Compass");
         Currency = new("Currency");
         Clock = new("Clock");
+        PinnedRecipe = new("PinnedRecipe")
+        {
+            BackgroundAlphaOverride = () => DynamicHudMod.PinnedRecipeAlpha.Value,
+            ContentAlphaOverride = () => DynamicHudMod.PinnedRecipeAlpha.Value,
+        };
 
         try
         {
@@ -180,6 +186,7 @@ public static class HudController
             SetupFromType<CrosshairUI>(Crosshair, "CrosshairUI");
             SetupFromType<CompassBarUI>(Compass, "CompassBarUI");
             SetupFromType<HudCurrencyDisplay>(Currency, "HudCurrencyDisplay");
+            SetupFromType<PinnedRecipeUI>(PinnedRecipe, "PinnedRecipeUI");
 
             var timePanel = FindChild(hudRoot, "TimePanel");
             if (timePanel != null)

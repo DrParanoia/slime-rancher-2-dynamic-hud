@@ -16,6 +16,7 @@ public class DynamicHudMod : MelonMod
     internal static MelonPreferences_Entry<float> FadeInDuration = null!;
     internal static MelonPreferences_Entry<float> FadeOutDuration = null!;
     internal static MelonPreferences_Entry<float> OpaqueHoldDuration = null!;
+    internal static MelonPreferences_Entry<float> PinnedRecipeAlpha = null!;
     internal static MelonPreferences_Entry<string> PeekKeyboardBinding = null!;
     internal static MelonPreferences_Entry<string> PeekGamepadBinding = null!;
     internal static MelonPreferences_Entry<bool> DebugLogging = null!;
@@ -49,6 +50,10 @@ public class DynamicHudMod : MelonMod
         OpaqueHoldDuration = Category.CreateEntry("OpaqueHoldDuration", 1.3f,
             "Opaque Hold Duration",
             "How long HUD elements stay fully opaque after an event (seconds).");
+
+        PinnedRecipeAlpha = Category.CreateEntry("PinnedRecipeAlpha", 0.3f,
+            "Pinned Recipe Alpha",
+            "Opacity of the pinned recipe list when idle (0 = invisible, 1 = fully opaque).");
 
         PeekKeyboardBinding = Category.CreateEntry("PeekKeyboardBinding", "<Keyboard>/leftAlt",
             "Peek Keyboard Binding",

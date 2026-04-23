@@ -15,6 +15,10 @@ public class HudElement
     public string Name { get; }
     public GameObject? GameObject { get; set; }
 
+    // Optional per-element alpha overrides. Null = use the global defaults.
+    public System.Func<float>? BackgroundAlphaOverride { get; set; }
+    public System.Func<float>? ContentAlphaOverride { get; set; }
+
     // Images (backgrounds, panels, icons) vs Text (labels, counts)
     private readonly List<GraphicEntry> _backgroundGraphics = new();
     private readonly List<GraphicEntry> _contentGraphics = new();
@@ -114,9 +118,11 @@ public class HudElement
             _blend = Mathf.MoveTowards(_blend, _targetBlend, speed);
         }
 
-        // Apply two-tier alpha
-        float bgAlpha = Mathf.Lerp(DynamicHudMod.BackgroundAlpha.Value, 1f, _blend);
-        float contentAlpha = Mathf.Lerp(DynamicHudMod.ContentAlpha.Value, 1f, _blend);
+        float idleBg = BackgroundAlphaOverride?.Invoke() ?? DynamicHudMod.BackgroundAlpha.Value;
+        float idleContent = ContentAlphaOverride?.Invoke() ?? DynamicHudMod.ContentAlpha.Value;
+
+        float bgAlpha = Mathf.Lerp(idleBg, 1f, _blend);
+        float contentAlpha = Mathf.Lerp(idleContent, 1f, _blend);
 
         ApplyAlpha(_backgroundGraphics, bgAlpha);
         ApplyAlpha(_contentGraphics, contentAlpha);

@@ -12,6 +12,7 @@ A MelonLoader mod that makes HUD elements fade to near-transparency when idle an
   - Currency display: earning or spending newbucks
   - Hotbar: switching slots or picking up / shooting / clearing items (per-slot tracking)
   - Clock, compass, crosshair: faded with everything else
+  - Pinned recipes: faded with its own separate alpha setting (more visible by default since the user pinned it intentionally)
 - **Peek button** - hold Left Alt (keyboard) or R3 (gamepad) to temporarily show the HUD at full opacity. On release, the fade-out timer starts. Useful when alphas are set to 0 for a fully invisible HUD
 - **Smooth transitions** - configurable fade-in and fade-out durations
 - **Session-safe** - correctly resets when returning to the main menu and reloading a save
@@ -36,6 +37,7 @@ Settings are in `UserData/MelonPreferences.cfg` under the `[DynamicHud]` section
 | FadeInDuration | 0.2 | Seconds to fade in to full opacity |
 | FadeOutDuration | 1.5 | Seconds to fade back to idle transparency |
 | OpaqueHoldDuration | 1.3 | Seconds to stay fully opaque after an event |
+| PinnedRecipeAlpha | 0.3 | Opacity of the pinned recipe list when idle (0-1) |
 | PeekKeyboardBinding | `<Keyboard>/leftAlt` | InputSystem path for the peek key. Hold to show the HUD; fade-out timer starts on release. Leave empty to disable |
 | PeekGamepadBinding | `<Gamepad>/rightStickPress` | InputSystem path for the peek button on gamepad. Leave empty to disable |
 | DebugLogging | false | Write debug info to `DynamicHud_debug.log` in the Mods folder |
