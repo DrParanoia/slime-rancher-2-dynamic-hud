@@ -16,10 +16,11 @@ If the mod appears to "stop working" shortly after launch with no errors, check 
 
 ## IL2CPP quirks
 
-- **Namespaces are prefixed with `Il2Cpp`**: use `Il2CppTMPro` (not `TMPro`), `Il2CppMonomiPark.SlimeRancher.*`, etc.
+- **Namespaces are prefixed with `Il2Cpp`** for types that would clash with .NET BCL types - `Il2CppTMPro` (not `TMPro`), `Il2CppMonomiPark.SlimeRancher.*`, etc. But types in `Unity*`-prefixed assemblies keep their original namespaces - e.g. `UnityEngine.InputSystem.InputAction` (NOT `Il2CppUnityEngine.InputSystem`).
 - **`HudUI.Instance` does not exist** - use `Object.FindObjectOfType<HudUI>()`.
 - **Inactive objects need `FindObjectOfType<T>(true)`** - `RadMeter` in particular is often inactive and won't be found with the default overload.
 - **Type casting uses `TryCast<T>()`**, not C# `as` - e.g. `graphic.TryCast<TMP_Text>()`.
+- **`NullableAttribute` polyfill required** - the IL2CPP-generated `Il2Cppmscorlib.dll` shadows the real `System.Runtime.CompilerServices.NullableAttribute`. The compiler can't find matching constructors and fails with CS0656 across every nullable-reference-type annotation. [NullableAttributes.cs](src/NullableAttributes.cs) polyfills the attribute in our own assembly so the compiler finds it first. Do not delete that file even though it looks unused.
 
 ## HUD lifecycle
 

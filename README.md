@@ -4,7 +4,7 @@ A MelonLoader mod that makes HUD elements fade to near-transparency when idle an
 
 ## Features
 
-- **Two-tier transparency** - backgrounds fade more aggressively (default 15% opacity) while icons and text stay more readable (default 40% opacity)
+- **Two-tier transparency** - backgrounds fade more aggressively (default 5% opacity) while icons and text stay more readable (default 40% opacity)
 - **Event-driven flash** - each HUD element becomes fully opaque only when something relevant happens:
   - Health bar: taking damage or healing
   - Energy bar: spending energy
@@ -12,6 +12,7 @@ A MelonLoader mod that makes HUD elements fade to near-transparency when idle an
   - Currency display: earning or spending newbucks
   - Hotbar: switching slots or picking up / shooting / clearing items (per-slot tracking)
   - Clock, compass, crosshair: faded with everything else
+- **Peek button** - hold Left Alt (keyboard) or R3 (gamepad) to temporarily show the HUD at full opacity. On release, the fade-out timer starts. Useful when alphas are set to 0 for a fully invisible HUD
 - **Smooth transitions** - configurable fade-in and fade-out durations
 - **Session-safe** - correctly resets when returning to the main menu and reloading a save
 - **Fully configurable** - all values adjustable via MelonLoader preferences
@@ -30,11 +31,13 @@ Settings are in `UserData/MelonPreferences.cfg` under the `[DynamicHud]` section
 | Setting | Default | Description |
 |---------|---------|-------------|
 | Enabled | true | Master toggle for the mod |
-| BackgroundAlpha | 0.15 | Opacity of HUD backgrounds when idle (0–1) |
+| BackgroundAlpha | 0.05 | Opacity of HUD backgrounds when idle (0–1) |
 | ContentAlpha | 0.4 | Opacity of icons and text when idle (0–1) |
 | FadeInDuration | 0.2 | Seconds to fade in to full opacity |
 | FadeOutDuration | 1.5 | Seconds to fade back to idle transparency |
 | OpaqueHoldDuration | 1.3 | Seconds to stay fully opaque after an event |
+| PeekKeyboardBinding | `<Keyboard>/leftAlt` | InputSystem path for the peek key. Hold to show the HUD; fade-out timer starts on release. Leave empty to disable |
+| PeekGamepadBinding | `<Gamepad>/rightStickPress` | InputSystem path for the peek button on gamepad. Leave empty to disable |
 | DebugLogging | false | Write debug info to `DynamicHud_debug.log` in the Mods folder |
 
 ## Building from source

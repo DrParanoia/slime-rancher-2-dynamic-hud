@@ -16,6 +16,8 @@ public class DynamicHudMod : MelonMod
     internal static MelonPreferences_Entry<float> FadeInDuration = null!;
     internal static MelonPreferences_Entry<float> FadeOutDuration = null!;
     internal static MelonPreferences_Entry<float> OpaqueHoldDuration = null!;
+    internal static MelonPreferences_Entry<string> PeekKeyboardBinding = null!;
+    internal static MelonPreferences_Entry<string> PeekGamepadBinding = null!;
     internal static MelonPreferences_Entry<bool> DebugLogging = null!;
 
     public override void OnInitializeMelon()
@@ -28,7 +30,7 @@ public class DynamicHudMod : MelonMod
             "Enable Dynamic HUD",
             "When enabled, HUD elements fade out when idle and fade in on activity.");
 
-        BackgroundAlpha = Category.CreateEntry("BackgroundAlpha", 0.15f,
+        BackgroundAlpha = Category.CreateEntry("BackgroundAlpha", 0.05f,
             "Background Alpha",
             "Opacity of HUD element backgrounds when idle (0 = invisible, 1 = fully opaque).");
 
@@ -47,6 +49,14 @@ public class DynamicHudMod : MelonMod
         OpaqueHoldDuration = Category.CreateEntry("OpaqueHoldDuration", 1.3f,
             "Opaque Hold Duration",
             "How long HUD elements stay fully opaque after an event (seconds).");
+
+        PeekKeyboardBinding = Category.CreateEntry("PeekKeyboardBinding", "<Keyboard>/leftAlt",
+            "Peek Keyboard Binding",
+            "InputSystem binding path for the peek key. Hold to temporarily show the HUD at full opacity. Leave empty to disable. Examples: <Keyboard>/leftAlt, <Keyboard>/capsLock, <Keyboard>/tab");
+
+        PeekGamepadBinding = Category.CreateEntry("PeekGamepadBinding", "<Gamepad>/rightStickPress",
+            "Peek Gamepad Binding",
+            "InputSystem binding path for the peek button on gamepad. Hold to temporarily show the HUD at full opacity. Leave empty to disable. Examples: <Gamepad>/rightStickPress, <Gamepad>/leftStickPress, <Gamepad>/select");
 
         DebugLogging = Category.CreateEntry("DebugLogging", false,
             "Debug Logging",

@@ -88,7 +88,6 @@ public class HudElement
     {
         if (!HasGraphics) return;
 
-        // Count down hold timer
         if (_holdTimer > 0f)
         {
             _holdTimer -= deltaTime;

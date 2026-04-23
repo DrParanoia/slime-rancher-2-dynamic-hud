@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Il2CppMonomiPark.SlimeRancher.UI;
 using Il2CppMonomiPark.SlimeRancher.UI.HUD;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace DynamicHud;
@@ -24,6 +25,10 @@ public static class HudController
     private static int _initAttempts;
     private static float _nextInitAttemptAt;
 
+    private static InputAction? _peekKbAction;
+    private static InputAction? _peekGpAction;
+    private static bool _peekActionsSetup;
+
     public static void EnsureInitAndUpdate()
     {
         if (!DynamicHudMod.EnableDynamicHud.Value)
@@ -31,6 +36,8 @@ public static class HudController
             RestoreOriginal();
             return;
         }
+
+        SetupPeekActions();
 
         // Reset if tracked objects were destroyed (e.g. returned to main menu)
         if (_initialized && !IsUICoreLoaded())
@@ -50,9 +57,60 @@ public static class HudController
         if (!_slotsResolved)
             TryResolveSlots();
 
+        if (IsPeekHeld())
+            FlashAll();
+
         float dt = Time.deltaTime;
         foreach (var element in AllElements)
             element.Update(dt);
+    }
+
+    public static void FlashAll()
+    {
+        foreach (var element in AllElements)
+            element.Flash();
+    }
+
+    private static void SetupPeekActions()
+    {
+        if (_peekActionsSetup) return;
+        _peekActionsSetup = true;
+
+        try
+        {
+            var kbPath = DynamicHudMod.PeekKeyboardBinding.Value;
+            if (!string.IsNullOrWhiteSpace(kbPath))
+            {
+                _peekKbAction = new InputAction("PeekKeyboard", InputActionType.Button, kbPath);
+                _peekKbAction.Enable();
+            }
+
+            var gpPath = DynamicHudMod.PeekGamepadBinding.Value;
+            if (!string.IsNullOrWhiteSpace(gpPath))
+            {
+                _peekGpAction = new InputAction("PeekGamepad", InputActionType.Button, gpPath);
+                _peekGpAction.Enable();
+            }
+
+            WriteLog($"Peek actions set up: keyboard='{kbPath}' gamepad='{gpPath}'");
+        }
+        catch (System.Exception ex)
+        {
+            WriteLog($"Failed to set up peek actions: {ex}");
+            _peekKbAction = null;
+            _peekGpAction = null;
+        }
+    }
+
+    private static bool IsPeekHeld()
+    {
+        try
+        {
+            if (_peekKbAction != null && _peekKbAction.IsPressed()) return true;
+            if (_peekGpAction != null && _peekGpAction.IsPressed()) return true;
+        }
+        catch { /* ignore transient input errors */ }
+        return false;
     }
 
     public static void FlashAllSlots()
