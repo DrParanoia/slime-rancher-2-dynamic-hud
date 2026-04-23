@@ -56,13 +56,56 @@ Choosing the right method matters - patching `PlayerState` alone often misses ev
 
 ## Two-tier alpha heuristic
 
-[HudElement.DiscoverGraphics()](src/HudElement.cs) classifies each `Graphic` as either background or content:
-- Text (`TMP_Text`, `Text`) → content (40% idle)
-- Root `Image` on the tracked GameObject → background (15% idle)
+[HudElement.DiscoverGraphics()](src/HudElement.cs) classifies each `Graphic` as either background or content, then applies `BackgroundAlpha` or `ContentAlpha` respectively:
+- Text (`TMP_Text`, `Text`) → content
+- Root `Image` on the tracked GameObject → background
 - Other `Image` with a "container-ish" name (container/frame/border/fill/bg/panel/bar/mask/overlay/etc.) → background
 - Everything else → content
 
 This heuristic works for all currently tracked elements but may need tweaking if new HUD types are added.
+
+### Per-element alpha overrides
+
+Elements can opt out of the global alpha values via `BackgroundAlphaOverride` and `ContentAlphaOverride` (both `Func<float>?`). The pinned recipe list uses this pattern to have its own `PinnedRecipeAlpha` setting. To override, set both funcs to read the same preference - the two-tier classification still happens, but both tiers end up at the same value.
+
+## InputSystem bindings
+
+Peek uses Unity's InputSystem (`UnityEngine.InputSystem.InputAction`) with separate actions per device to keep the call sites simple:
+
+```csharp
+var action = new InputAction("Name", InputActionType.Button, "<Keyboard>/leftAlt");
+action.Enable();
+// Each frame: action.IsPressed()  or  action.WasPressedThisFrame()
+```
+
+Bindings are path strings like `<Keyboard>/leftAlt`, `<Gamepad>/rightStickPress`. For future bindings, create one `InputAction` per device path rather than one action with multiple bindings - avoids IL2CPP extension-method quirks with `AddBinding`. Bindings are read at mod init, so the user must restart the game after editing preferences.
+
+## Handling SR2 game updates
+
+When a new SR2 version drops:
+
+1. Back up `game/UserData/` (your MelonPreferences + saves) and `game/steam_appid.txt`.
+2. Delete the entire `game/` folder. Stale IL2CPP assemblies cause weird compile/runtime mismatches.
+3. Copy the updated SR2 install into `game/`, then run the MelonLoader installer against `game/SlimeRancher2.exe`.
+4. Restore `steam_appid.txt` and `UserData/`.
+5. Launch once - MelonLoader regenerates IL2CPP assemblies against the new game build.
+6. `dotnet build src/DynamicHud.csproj` - any compile errors point to renamed/removed types or methods.
+7. Test in-game with `DebugLogging = true` and check elements still resolve.
+
+Expected breakage that isn't your fault: CS0656 `NullableAttribute..ctor` errors if the new `Il2Cppmscorlib.dll` shadows `System.Runtime`. Already handled by [NullableAttributes.cs](src/NullableAttributes.cs) - don't delete it even if the build temporarily succeeds without it.
+
+## Release checklist
+
+Version is defined in exactly one place: the third arg to `MelonInfo` in [AssemblyInfo.cs](src/Properties/AssemblyInfo.cs). The csproj has no `<Version>` element.
+
+1. Bump the MelonInfo version in [AssemblyInfo.cs](src/Properties/AssemblyInfo.cs).
+2. `dotnet build src/DynamicHud.csproj`.
+3. Commit, push `main`.
+4. Zip just `game/Mods/DynamicHud.dll` as `DynamicHud-vX.Y.Z.zip`.
+5. `gh release create vX.Y.Z DynamicHud-vX.Y.Z.zip --title vX.Y.Z --notes "..."`.
+6. Upload the same zip to NexusMods as a new file (don't overwrite old versions - users may want to roll back).
+
+The version convention is to match the target SR2 game version.
 
 ## Debug logging
 
